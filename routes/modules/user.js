@@ -1,10 +1,11 @@
 const express = require('express')
 const router = express.Router()
 const userController = require('../../controller/user-controller')
-const { apiErrorHandler } = require('../../midddleware/error-handler')
+const passport=require('../../config/passport')
 
 router.get('/signup')
 router.post('/signup', userController.signUp)
+router.get('/signin')
+router.post('/signin',passport.authenticate('local',{session:false}), userController.signIn)
 
-router.use('/', apiErrorHandler)
 module.exports = router
