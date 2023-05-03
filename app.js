@@ -12,6 +12,7 @@ app.use(express.urlencoded({extended:true}))
 
 //use json
 app.use(express.json())
+
 // routes
 app.use(routes)
 
