@@ -1,5 +1,5 @@
-const { Collection } = require('../models')
-const collection = require('../models/collection')
+const { Collection, Exhibition } = require('../models')
+
 
 const adminController = {
   getCollections: (req, res, next) => {
@@ -72,7 +72,6 @@ const adminController = {
           image
         })
       })
-
       .then(editedCollection => res.json({ status: 'success', editedCollection }))
       .catch(err => next(err))
   },
@@ -88,6 +87,94 @@ const adminController = {
       return collection.destroy()
     })
       .then(deletedCollection => res.json({ status: 'success', deletedCollection }))
+      .catch(err => next(err))
+  },
+  //get exhibitions
+  getExhibitions: (req, res, next) => {
+    Exhibition.findAll({
+      raw: true,
+      nest: true
+    })
+      .then(exhibitions => res.json({ status: 'success', exhibitions }))
+      .catch(err => next(err))
+  },
+  //create exhibition page
+  createExhibition: (req, res, next) => {
+
+  },
+  // create exhibition
+  postExhibition: (req, res, next) => {
+    const { name, startDate, endDate, openTime, location, fare, description } = req.body
+    if (!name) throw new Error('Exhibition name is required')
+    return Exhibition.create({
+      name,
+      startDate,
+      endDate,
+      openTime,
+      location,
+      fare,
+      description
+    })
+      .then(newExhibition => res.json({ status: 'success', newExhibition }))
+      .catch(err => next(err))
+  },
+  // exhibition detail
+  getExhibition: (req, res, next) => {
+    const id = req.params.id
+    Exhibition.findByPk(id, {
+      raw: true,
+      nest: true
+    })
+      .then(exhibition => {
+        if (!exhibition) throw new Error('The exhibition is not exist')
+        res.json({ status: 'success', exhibition })
+      })
+      .catch(err => next(err))
+  },
+  // edit exhibition page
+  editExhibition: (req, res, next) => {
+    const id = req.params.id
+    Exhibition.findByPk(id, {
+      raw: true,
+    })
+      .then(exhibition => {
+        if (!exhibition) throw new Error('The exhibition is not exist')
+        res.json({ status: 'success', exhibition })
+      })
+      .catch(err => next(err))
+  },
+  //edit exhibition
+  putExhibition: (req, res, next) => {
+    const id = req.params.id
+    const { name, startDate, endDate, openTime, location, fare, description } = req.body
+    if (!name) throw new Error('Exhibition name is required')
+    Exhibition.findByPk(id)
+      .then(exhibition => {
+        return exhibition.update({
+          name,
+          startDate,
+          endDate,
+          openTime,
+          location,
+          fare,
+          description
+        })
+      })
+      .then(editedExhibition => res.json({ status: 'success', editedExhibition }))
+      .catch(err => next(err))
+  },
+  deleteExhibition: (req, res, next) => {
+    const id = req.params.id
+    Exhibition.findByPk(id)
+    then(exhibition => {
+      if (!exhibition) {
+        const err = new Error('The exhibition is not exist')
+        err.status = 404
+        throw err
+      }
+      return exhibition.destroy()
+    })
+      .then(deletedExhibition => res.json({ status: 'success', deletedExhibition }))
       .catch(err => next(err))
   }
 }
