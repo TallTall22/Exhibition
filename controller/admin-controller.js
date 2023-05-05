@@ -5,18 +5,24 @@ const adminController = {
   getCollections: (req, res, next) => {
     Collection.findAll({
       raw: true,
-      nest: true
+      nest: true,
+      include: Exhibition
     })
       .then(collections => res.json({ status: 'success', collections }))
       .catch(err => next(err))
   },
   //create collection page
   createCollection: (req, res, next) => {
-
+    Exhibition.findAll({
+      raw: true,
+      nest: true
+    })
+      .then(exhibitions => res.json({ status: 'success', exhibitions }))
+      .catch(err => next(err))
   },
   // create collection
   postCollection: (req, res, next) => {
-    const { name, category, slogan, artMaker, description, artRemark, image } = req.body
+    const { name, category, slogan, artMaker, description, artRemark, image, exhibitionId } = req.body
     if (!name) throw new Error('Collection name is required')
     return Collection.create({
       name,
@@ -25,7 +31,8 @@ const adminController = {
       artMaker,
       description,
       artRemark,
-      image
+      image,
+      exhibitionId
     })
       .then(newCollection => res.json({ status: 'success', newCollection }))
       .catch(err => next(err))
@@ -35,7 +42,8 @@ const adminController = {
     const id = req.params.id
     Collection.findByPk(id, {
       raw: true,
-      nest: true
+      nest: true,
+      include: [Exhibition]
     })
       .then(collection => {
         if (!collection) throw new Error('The collection is not exist')
@@ -46,22 +54,24 @@ const adminController = {
   // edit collection page
   editCollection: (req, res, next) => {
     const id = req.params.id
-    Collection.findByPk(id, {
-      raw: true,
-    })
-      .then(collection => {
+    Promise.all([
+      Collection.findByPk(id, { raw: true }),
+      Exhibition.findAll({ raw: true })
+    ])
+      .then(([collection,exhibitions]) => {
         if (!collection) throw new Error('The collection is not exist')
-        res.json({ status: 'success', collection })
+        res.json({ status: 'success', collection, exhibitions })
       })
       .catch(err => next(err))
   },
   //edit collection
   putCollection: (req, res, next) => {
     const id = req.params.id
-    const { name, category, slogan, artMaker, description, artRemark, image } = req.body
+    const { name, category, slogan, artMaker, description, artRemark, image, exhibitionId } = req.body
     if (!name) throw new Error('Collection name is required')
     Collection.findByPk(id)
       .then(collection => {
+        if (!collection) throw new Error('The collection is not exist')
         return collection.update({
           name,
           category,
@@ -69,7 +79,8 @@ const adminController = {
           artMaker,
           description,
           artRemark,
-          image
+          image,
+          exhibitionId
         })
       })
       .then(editedCollection => res.json({ status: 'success', editedCollection }))

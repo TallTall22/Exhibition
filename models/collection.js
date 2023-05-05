@@ -2,6 +2,7 @@
 const {
   Model
 } = require('sequelize')
+const exhibition = require('./exhibition')
 module.exports = (sequelize, DataTypes) => {
   class Collection extends Model {
     /**
@@ -9,8 +10,9 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate (models) {
+    static associate(models) {
       // define association here
+      Collection.belongsTo(models.Exhibition, { foreignKey: 'exhibitionId' })
     }
   }
   Collection.init({
@@ -24,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Collection',
-    tableName:'Collections',
+    tableName: 'Collections',
     underscored: true
   })
   return Collection
