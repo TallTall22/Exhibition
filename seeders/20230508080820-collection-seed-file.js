@@ -70,9 +70,9 @@ module.exports = {
         name: collection.result[0].ArticleSubject,
         category: collection.result[0].CateGory,
         slogan: collection.result[0].Slogan,
-        artMaker: collection.result[0].ArticleMaker,
+        art_maker: collection.result[0].ArticleMaker,
         description: collection.result[0].ArticleContext,
-        artRemark: collection.result[0].ArticleRemarks,
+        art_remark: collection.result[0].ArticleRemarks,
         image: collection.result[0].imgUrl,
         created_at: new Date(),
         updated_at: new Date()

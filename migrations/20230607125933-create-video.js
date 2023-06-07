@@ -1,8 +1,8 @@
-'use strict'
+'use strict';
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Collections', {
+    await queryInterface.createTable('Videos', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -12,22 +12,13 @@ module.exports = {
       name: {
         type: Sequelize.STRING
       },
-      category: {
-        type: Sequelize.STRING
-      },
-      slogan: {
-        type: Sequelize.STRING
-      },
-      art_maker: {
-        type: Sequelize.STRING
-      },
       description: {
         type: Sequelize.TEXT
       },
-      art_remark: {
+      issue_date: {
         type: Sequelize.STRING
       },
-      image: {
+      video_url: {
         type: Sequelize.STRING
       },
       created_at: {
@@ -38,9 +29,9 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE
       }
-    })
+    });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Collections');
+    await queryInterface.dropTable('Videos');
   }
-}
+};

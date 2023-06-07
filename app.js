@@ -5,7 +5,7 @@ if(process.env.NODE_ENV!=='production'){
 const express = require('express')
 const routes = require('./routes')
 const app = express()
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 3001
 
 // use body-parser
 app.use(express.urlencoded({extended:true}))

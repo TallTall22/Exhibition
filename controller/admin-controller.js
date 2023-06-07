@@ -1,12 +1,11 @@
-const { Collection, Exhibition } = require('../models')
+const { Collection, Exhibition,User,video } = require('../models')
 
 
 const adminController = {
   getCollections: (req, res, next) => {
     Collection.findAll({
       raw: true,
-      nest: true,
-      include: Exhibition
+      nest: true
     })
       .then(collections => res.json({ status: 'success', collections }))
       .catch(err => next(err))
@@ -134,7 +133,8 @@ const adminController = {
     const id = req.params.id
     Exhibition.findByPk(id, {
       raw: true,
-      nest: true
+      nest: true,
+      include: Collection
     })
       .then(exhibition => {
         if (!exhibition) throw new Error('The exhibition is not exist')
@@ -174,6 +174,7 @@ const adminController = {
       .then(editedExhibition => res.json({ status: 'success', editedExhibition }))
       .catch(err => next(err))
   },
+  //delete Exhibition
   deleteExhibition: (req, res, next) => {
     const id = req.params.id
     Exhibition.findByPk(id)
@@ -187,6 +188,35 @@ const adminController = {
     })
       .then(deletedExhibition => res.json({ status: 'success', deletedExhibition }))
       .catch(err => next(err))
+  },
+  // get Users
+  getCollections: (req, res, next) => {
+    User.findAll({
+      raw: true,
+      nest: true
+    })
+      .then(users => res.json({ status: 'success', users }))
+      .catch(err => next(err))
+  },
+  // patch User isAdmin
+  patchUser:(req,res,next)=>{
+    const id=req.params.id
+    User.findByPk(id)
+    .then(user=>{
+      if(user.email===process.env.SUPER_USER_EMAIL) throw new Error('This user permission can not be change')
+      return user.update({where:{isAdmin:!user.isAdmin}})
+    })
+    .then(user => res.json({ status: 'success', user }))
+      .catch(err => next(err))
+  },
+  // get Videos
+  getVideos:(req,res,next)=>{
+    video.findAll({
+      raw:true,
+      nest:true
+    })
+    .then(videos=>res.json({status:'success',videos}))
+    .catch(err=>next(err))
   }
 }
 
