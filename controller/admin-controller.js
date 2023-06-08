@@ -190,7 +190,7 @@ const adminController = {
       .catch(err => next(err))
   },
   // get Users
-  getCollections: (req, res, next) => {
+  getUsers: (req, res, next) => {
     User.findAll({
       raw: true,
       nest: true

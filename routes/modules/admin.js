@@ -18,4 +18,8 @@ router.put('/exhibitions/:id', adminController.putExhibition)
 router.post('/exhibitions', adminController.postExhibition)
 router.get('/exhibitions', adminController.getExhibitions)
 
+router.get('/users',adminController.getUsers)
+router.patch('/users/:id',adminController.patchUser)
+
+router.get('/videos',adminController.getVideos)
 module.exports = router
