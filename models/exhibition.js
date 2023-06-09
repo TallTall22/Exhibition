@@ -21,7 +21,8 @@ module.exports = (sequelize, DataTypes) => {
     openTime: DataTypes.STRING,
     location: DataTypes.STRING,
     fare: DataTypes.STRING,
-    description: DataTypes.TEXT
+    description: DataTypes.TEXT,
+    image:DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Exhibition',

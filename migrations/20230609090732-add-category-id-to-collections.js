@@ -1,18 +1,19 @@
-'use strict'
+'use strict';
 
 /** @type {import('sequelize-cli').Migration} */
+
 module.exports = {
   async up (queryInterface, Sequelize) {
-    await queryInterface.addColumn('Collections','exhibition_id',{
+    await queryInterface.addColumn('Collections','category_id',{
       type:Sequelize.INTEGER,
       references:{
-        model:'Exhibitions',
+        model:'Categories',
         key:'id'
       }
     })
   },
 
   async down (queryInterface, Sequelize) {
-    await queryInterface.removeColumn('Collections', 'exhibition_id')
+    await queryInterface.removeColumn('Collections','category_id')
   }
-}
+};

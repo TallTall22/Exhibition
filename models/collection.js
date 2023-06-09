@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Collection.belongsTo(models.Exhibition, { foreignKey: 'exhibitionId' })
+      Collection.belongsTo(models.Category, { foreignKey: 'categoryId' })
     }
   }
   Collection.init({

@@ -1,4 +1,4 @@
-const { Collection, Exhibition,User,video } = require('../models')
+const { Collection, Exhibition,User,Video } = require('../models')
 
 
 const adminController = {
@@ -33,7 +33,7 @@ const adminController = {
       image,
       exhibitionId
     })
-      .then(newCollection => res.json({ status: 'success', newCollection }))
+      .then(newCollection => res.json({ status: 'success', collection:newCollection }))
       .catch(err => next(err))
   },
   // collection detail
@@ -82,7 +82,7 @@ const adminController = {
           exhibitionId
         })
       })
-      .then(editedCollection => res.json({ status: 'success', editedCollection }))
+      .then(editedCollection => res.json({ status: 'success', collection:editedCollection }))
       .catch(err => next(err))
   },
   deleteCollection: (req, res, next) => {
@@ -96,7 +96,7 @@ const adminController = {
       }
       return collection.destroy()
     })
-      .then(deletedCollection => res.json({ status: 'success', deletedCollection }))
+      .then(deletedCollection => res.json({ status: 'success', collection:deletedCollection }))
       .catch(err => next(err))
   },
   //get exhibitions
@@ -125,7 +125,7 @@ const adminController = {
       fare,
       description
     })
-      .then(newExhibition => res.json({ status: 'success', newExhibition }))
+      .then(newExhibition => res.json({ status: 'success', exhibition:newExhibition }))
       .catch(err => next(err))
   },
   // exhibition detail
@@ -171,7 +171,7 @@ const adminController = {
           description
         })
       })
-      .then(editedExhibition => res.json({ status: 'success', editedExhibition }))
+      .then(editedExhibition => res.json({ status: 'success', exhibition:editedExhibition }))
       .catch(err => next(err))
   },
   //delete Exhibition
@@ -186,7 +186,7 @@ const adminController = {
       }
       return exhibition.destroy()
     })
-      .then(deletedExhibition => res.json({ status: 'success', deletedExhibition }))
+      .then(deletedExhibition => res.json({ status: 'success', exhibition:deletedExhibition }))
       .catch(err => next(err))
   },
   // get Users
@@ -204,14 +204,14 @@ const adminController = {
     User.findByPk(id)
     .then(user=>{
       if(user.email===process.env.SUPER_USER_EMAIL) throw new Error('This user permission can not be change')
-      return user.update({where:{isAdmin:!user.isAdmin}})
+      return user.update({isAdmin:!user.isAdmin})
     })
     .then(user => res.json({ status: 'success', user }))
-      .catch(err => next(err))
+    .catch(err => next(err))
   },
   // get Videos
   getVideos:(req,res,next)=>{
-    video.findAll({
+    Video.findAll({
       raw:true,
       nest:true
     })
