@@ -1,5 +1,5 @@
-const { Collection, Exhibition,User,Video } = require('../models')
-
+const { Collection, Exhibition,User,Video,Category } = require('../models')
+const {localFileHandler}=require('../helpers/file-helper')
 
 const adminController = {
   getCollections: (req, res, next) => {
@@ -12,27 +12,41 @@ const adminController = {
   },
   //create collection page
   createCollection: (req, res, next) => {
-    Exhibition.findAll({
+    Promise.all([
+      Exhibition.findAll({
       raw: true,
       nest: true
-    })
-      .then(exhibitions => res.json({ status: 'success', exhibitions }))
+    }),
+      Category.findAll({
+        raw:true,
+        nest:true
+      })
+    ])
+      .then(([exhibitions,categories]) => res.json({ status: 'success', exhibitions,categories }))
       .catch(err => next(err))
   },
   // create collection
   postCollection: (req, res, next) => {
-    const { name, category, slogan, artMaker, description, artRemark, image, exhibitionId } = req.body
+    const { name, category, slogan, artMaker, description, artRemark, exhibitionId,categoryId } = req.body
     if (!name) throw new Error('Collection name is required')
-    return Collection.create({
+    const {file}=req
+    Promise.all([
+      Category.findAll({raw:true}),
+      localFileHandler(file)
+    ])
+    .then(([filePath,categories])=>{
+      Collection.create({
       name,
-      category,
+      category:categories[categoryId-1].name,
       slogan,
       artMaker,
       description,
       artRemark,
-      image,
-      exhibitionId
+      image:filePath||null,
+      exhibitionId,
+      categoryId
     })
+    }) 
       .then(newCollection => res.json({ status: 'success', collection:newCollection }))
       .catch(err => next(err))
   },
@@ -55,31 +69,38 @@ const adminController = {
     const id = req.params.id
     Promise.all([
       Collection.findByPk(id, { raw: true }),
-      Exhibition.findAll({ raw: true })
+      Exhibition.findAll({ raw: true }),
+      Category.findAll({raw:true})
     ])
-      .then(([collection,exhibitions]) => {
+      .then(([collection,exhibitions,categories]) => {
         if (!collection) throw new Error('The collection is not exist')
-        res.json({ status: 'success', collection, exhibitions })
+        res.json({ status: 'success', collection, exhibitions,categories })
       })
       .catch(err => next(err))
   },
   //edit collection
   putCollection: (req, res, next) => {
     const id = req.params.id
-    const { name, category, slogan, artMaker, description, artRemark, image, exhibitionId } = req.body
+    const { name, slogan, artMaker, description, artRemark, exhibitionId,categoryId } = req.body
     if (!name) throw new Error('Collection name is required')
-    Collection.findByPk(id)
-      .then(collection => {
+    const {file}=req
+    Promise.all([
+     Collection.findByPk(id),
+     localFileHandler(file),
+     Category.findAll({raw:true})
+    ])
+      .then(([collection,filePath,categories]) => {
         if (!collection) throw new Error('The collection is not exist')
         return collection.update({
           name,
-          category,
+          category:categories[categoryId-1].name,
           slogan,
           artMaker,
           description,
           artRemark,
-          image,
-          exhibitionId
+          image:filePath||collection.image,
+          exhibitionId,
+          categoryId
         })
       })
       .then(editedCollection => res.json({ status: 'success', collection:editedCollection }))
@@ -116,15 +137,20 @@ const adminController = {
   postExhibition: (req, res, next) => {
     const { name, startDate, endDate, openTime, location, fare, description } = req.body
     if (!name) throw new Error('Exhibition name is required')
-    return Exhibition.create({
+    const {file}=req
+    localFileHandler(file)
+    .then(filePath=>{
+      Exhibition.create({
       name,
       startDate,
       endDate,
       openTime,
       location,
       fare,
-      description
-    })
+      description,
+      image:filePath||null
+      })
+    }) 
       .then(newExhibition => res.json({ status: 'success', exhibition:newExhibition }))
       .catch(err => next(err))
   },
@@ -159,8 +185,12 @@ const adminController = {
     const id = req.params.id
     const { name, startDate, endDate, openTime, location, fare, description } = req.body
     if (!name) throw new Error('Exhibition name is required')
-    Exhibition.findByPk(id)
-      .then(exhibition => {
+    const {file}=req
+    Promise.all([
+      Exhibition.findByPk(id),
+      localFileHandler(file)
+    ])  
+      .then(([exhibition,filePath]) => {
         return exhibition.update({
           name,
           startDate,
@@ -168,7 +198,8 @@ const adminController = {
           openTime,
           location,
           fare,
-          description
+          description,
+          image:filePath||exhibition.image
         })
       })
       .then(editedExhibition => res.json({ status: 'success', exhibition:editedExhibition }))
