@@ -22,22 +22,26 @@ const adminController = {
         nest:true
       })
     ])
-      .then(([exhibitions,categories]) => res.json({ status: 'success', exhibitions,categories }))
+      .then(([exhibitions,categories]) =>res.json({ status: 'success', exhibitions,categories })
+    )
       .catch(err => next(err))
   },
   // create collection
   postCollection: (req, res, next) => {
-    const { name, category, slogan, artMaker, description, artRemark, exhibitionId,categoryId } = req.body
+    const { name, slogan, artMaker, description, artRemark, exhibitionId,categoryId } = req.body
     if (!name) throw new Error('Collection name is required')
     const {file}=req
     Promise.all([
-      Category.findAll({raw:true}),
+      Category.findByPk(categoryId,{
+        raw:true,
+        nest:true
+      }),
       localFileHandler(file)
     ])
-    .then(([filePath,categories])=>{
-      Collection.create({
+    .then(([category,filePath])=>{
+      return Collection.create({
       name,
-      category:categories[categoryId-1].name,
+      category:category.name,
       slogan,
       artMaker,
       description,
@@ -56,7 +60,7 @@ const adminController = {
     Collection.findByPk(id, {
       raw: true,
       nest: true,
-      include: [Exhibition]
+      include: Exhibition
     })
       .then(collection => {
         if (!collection) throw new Error('The collection is not exist')
@@ -87,19 +91,23 @@ const adminController = {
     Promise.all([
      Collection.findByPk(id),
      localFileHandler(file),
-     Category.findAll({raw:true})
+     Category.findByPk(categoryId,{
+        raw:true,
+        nest:true
+      })
     ])
-      .then(([collection,filePath,categories]) => {
+      .then(([collection,filePath,category]) => {
+        console.log(category.name)
         if (!collection) throw new Error('The collection is not exist')
         return collection.update({
           name,
-          category:categories[categoryId-1].name,
+          category:category.name,
           slogan,
           artMaker,
           description,
           artRemark,
           image:filePath||collection.image,
-          exhibitionId,
+          exhibitionId:exhibitionId||collection.exhibitionId,
           categoryId
         })
       })
@@ -109,7 +117,7 @@ const adminController = {
   deleteCollection: (req, res, next) => {
     const id = req.params.id
     Collection.findByPk(id)
-    then(collection => {
+    .then(collection => {
       if (!collection) {
         const err = new Error('The collection is not exist')
         err.status = 404
@@ -160,7 +168,6 @@ const adminController = {
     Exhibition.findByPk(id, {
       raw: true,
       nest: true,
-      include: Collection
     })
       .then(exhibition => {
         if (!exhibition) throw new Error('The exhibition is not exist')
@@ -207,15 +214,27 @@ const adminController = {
   },
   //delete Exhibition
   deleteExhibition: (req, res, next) => {
-    const id = req.params.id
-    Exhibition.findByPk(id)
-    then(exhibition => {
+    const id=req.params.id
+    Promise.all([
+      Exhibition.findByPk(id),
+      Exhibition.findOne({where:{name:'未出展'},raw:true}),
+      Collection.findAll({where:{exhibitionId:id}})
+    ])    
+    .then(([exhibition,defaultExhibition,collections]) => {
+      if(exhibition.name==='未出展') throw new Error('This exhibition can not delete')
       if (!exhibition) {
         const err = new Error('The exhibition is not exist')
         err.status = 404
         throw err
+      }else{
+        console.log(collections)
+        console.log(defaultExhibition)
+        if(collections){
+          Collection.update({exhibitionId:defaultExhibition.id},{where:{exhibitionId:id}})
+        }
+
+        return exhibition.destroy()
       }
-      return exhibition.destroy()
     })
       .then(deletedExhibition => res.json({ status: 'success', exhibition:deletedExhibition }))
       .catch(err => next(err))

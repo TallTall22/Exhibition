@@ -3,18 +3,25 @@ if(process.env.NODE_ENV!=='production'){
 }
 const path=require('path')
 const express = require('express')
+const session=require('express-session')
+const usePassport=require('./config/passport')
 const routes = require('./routes')
 const app = express()
 const port = process.env.PORT || 3001
 
 app.use('/upload',express.static(path.join(__dirname,'upload')))
 
+
 // use body-parser
 app.use(express.urlencoded({extended:true}))
 
 //use json
-app.use(express.json())
+app.use(express.json({limit:'10mb'}))
 
+//express-session
+app.use(session({secret:process.env.SESSION_SECRET,resave:false,saveUninitialized:true}))
+//use passport
+usePassport(app)
 //CORS
 app.use((req, res, next) => {
   // 設置允許跨域的源，可以使用 '*' 允許所有源，或指定特定的源
