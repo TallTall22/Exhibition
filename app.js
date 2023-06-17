@@ -22,6 +22,7 @@ app.use(express.json({limit:'10mb'}))
 app.use(session({secret:process.env.SESSION_SECRET,resave:false,saveUninitialized:true}))
 //use passport
 usePassport(app)
+
 //CORS
 app.use((req, res, next) => {
   // 設置允許跨域的源，可以使用 '*' 允許所有源，或指定特定的源

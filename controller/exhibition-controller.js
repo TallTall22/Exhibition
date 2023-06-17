@@ -15,6 +15,14 @@ const exhibitionController={
     })
     .then(recentExhibition=>res.json({status:'success',exhibitions:recentExhibition}))
     .catch(err=>next(err))
+  },
+  getExhibitions:(req,res,next)=>{
+    Exhibition.findAll({
+      raw:true,
+      nest:true
+    })
+    .then(exhibitions=>res.json({status:'success',exhibitions}))
+    .catch(err=>next(err))
   }
 }
 
