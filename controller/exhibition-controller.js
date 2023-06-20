@@ -1,5 +1,5 @@
 const { Op } = require('sequelize')
-const {Exhibition}=require('../models')
+const {Exhibition,Collection}=require('../models')
 
 const exhibitionController={
   getRecentExhibition:(req,res,next)=>{
@@ -22,6 +22,25 @@ const exhibitionController={
       nest:true
     })
     .then(exhibitions=>res.json({status:'success',exhibitions}))
+    .catch(err=>next(err))
+  },
+  getExhibition:(req,res,next)=>{
+    const id=req.params.id
+    Promise.all([
+      Exhibition.findByPk(id,{
+      raw:true,
+      nest:true
+    }),
+      Collection.findAll({
+        where:{exhibitionId:id},
+        limit:6,
+        raw:true,
+        nest:true
+      })
+    ])
+    .then(([exhibition,collections])=>{
+      res.json({status:'success',exhibition,collections})
+    })
     .catch(err=>next(err))
   }
 }
