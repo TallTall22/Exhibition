@@ -13,7 +13,6 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       Ticket.belongsTo(models.User,{foreignKey:'userId'})
       Ticket.belongsTo(models.Exhibition,{foreignKey:'exhibitionId'})
-      Ticket.belongsTo(models.Cart,{foreignKey:'cartId'})
     }
   }
   Ticket.init({

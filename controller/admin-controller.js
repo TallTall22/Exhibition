@@ -1,5 +1,5 @@
 const { Collection, Exhibition,User,Video,Category } = require('../models')
-const {localFileHandler}=require('../helpers/file-helper')
+const {imgurHandler}=require('../helpers/file-helper')
 
 const adminController = {
   getCollections: (req, res, next) => {
@@ -36,7 +36,7 @@ const adminController = {
         raw:true,
         nest:true
       }),
-      localFileHandler(file)
+      imgurHandler(file)
     ])
     .then(([category,filePath])=>{
       return Collection.create({
@@ -90,7 +90,7 @@ const adminController = {
     const {file}=req
     Promise.all([
      Collection.findByPk(id),
-     localFileHandler(file),
+     imgurHandler(file),
      Category.findByPk(categoryId,{
         raw:true,
         nest:true
@@ -146,7 +146,7 @@ const adminController = {
     const { name, startDate, endDate, openTime, location, fare, description } = req.body
     if (!name) throw new Error('Exhibition name is required')
     const {file}=req
-    localFileHandler(file)
+    imgurHandler(file)
     .then(filePath=>{
       Exhibition.create({
       name,
@@ -195,7 +195,7 @@ const adminController = {
     const {file}=req
     Promise.all([
       Exhibition.findByPk(id),
-      localFileHandler(file)
+      imgurHandler(file)
     ])  
       .then(([exhibition,filePath]) => {
         return exhibition.update({

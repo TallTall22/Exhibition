@@ -7,15 +7,16 @@ const collection=require('./modules/collection')
 const video=require('./modules/video')
 const cart=require('./modules/cart')
 const ticket=require('./modules/ticket')
+const {authenticated,authenticatedAdmin}=require('../middleware/auth')
 const { apiErrorHandler } = require('../middleware/error-handler')
 
 router.use('/users', user)
-router.use('/admin', admin)
+router.use('/admin',authenticated,authenticatedAdmin, admin)
 router.use('/exhibitions',exhibition)
 router.use('/collections',collection)
 router.use('/videos',video)
 router.use('/carts',cart)
-router.use('/ticket',ticket)
+router.use('/tickets',authenticated,ticket)
 router.use('/', apiErrorHandler)
 
 module.exports = router

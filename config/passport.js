@@ -35,18 +35,9 @@ const jwtOption = {
 }
 
 const jwtStrategy=new JWTStrategy(jwtOption,(jwtPayload,cb)=>{
-    User.findByPk(jwtPayload.userId, (err, user) => {
-    if (err) {
-      return cb(err, false);
-    }
-    if (user) {
-      // 如果找到使用者，將使用者物件傳遞給下一個 middleware
-      return cb(null, user);
-    } else {
-      // 如果找不到使用者，回傳 false
-      return cb(null, false);
-    }
-  })
+    User.findByPk(jwtPayload.id)
+    .then(user=>cb(null,user))
+    .catch(err=>cb(err))
 })
 
 passport.use(jwtStrategy)

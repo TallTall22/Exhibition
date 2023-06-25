@@ -37,6 +37,15 @@ const userController = {
     catch (err) {
       next(err)
     }
+  },
+  checkUser:(req, res, next)=>{
+    const user=req.user
+    User.findByPk(user.id)
+    .then(user=>{
+      if(!user) throw new Error('The User is not Exist!')
+      res.json({status:'success',user})
+    })
+    .catch(err=>next(err))
   }
 }
 

@@ -1,39 +1,36 @@
-const {Ticket,Exhibition,User,Cart}=require('../models')
+const {Ticket,Exhibition}=require('../models')
 
 const ticketController={
   getTickets:(req,res,next)=>{
     const user=req.user
     Ticket.findAll({
       where:{userId:user.id},
-      include:[User,Exhibition],
+      include:Exhibition,
       raw:true,
       nest:true
     })
     .then(tickets=>res.json({status:'success',tickets}))
     .catch(err=>next(err))
   },
-  postTicket:async(req,res,next)=>{
+  postTicket:(req,res,next)=>{
     const user=req.user
-    const {quantity,exhibitionId,cartId}=req.body
-
-     for(let i=0;i<cartId.length;i++){
-      Ticket.create({
-      userId:1,
-      exhibitionId:exhibitionId[i],
-      quantity:quantity[i],
+    const {quantity}=req.body
+    const exhibitionId=req.params.id
+    return Ticket.create({
+      userId:user.id,
+      exhibitionId,
+      quantity,
       isUsed:false,
-      cartId:cartId[i]
     })
-     await Cart.update({userId:1},{where:{id:cartId[i]}})
-    }
-    return res.json({status:'success'})
+    .then(ticket=>res.json({status:'success',ticket}))
+    .catch(err=>next(err))
   },
   deleteTicket:(req,res,next)=>{
     const id=req.params.id
     Ticket.findByPk(id)
     .then(ticket=>{
       if(!ticket) throw new Error('The ticket is not existed')
-      return ticket.destory()
+      return ticket.destroy()
     })
     .then(ticket=>res.json({status:'success',ticket}))
     .catch(err=>next(err))
@@ -46,6 +43,26 @@ const ticketController={
       return ticket.update({isUsed:true})
     })
     .then(ticket=>res.json({status:'success',ticket}))
+    .catch(err=>next(err))
+  },
+  getExhibitions:(req,res,next)=>{
+    const user=req.user
+    Exhibition.findAll({
+      raw:true,
+      nest:true
+    })
+    .then(exhibitions=>res.json({status:'success',exhibitions,user}))
+    .catch(err=>next(err))
+  },
+  getExhibition:(req,res,next)=>{
+    const id=req.params.id
+    const user=req.user
+    Exhibition.findByPk(id,{
+      raw:true,
+      nest:true
+    })
+    .then(exhibition=>res.json({status:'success',exhibition,user}))
+    .catch(err=>next(err))
   }
 }
 
