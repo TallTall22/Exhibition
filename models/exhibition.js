@@ -24,7 +24,8 @@ module.exports = (sequelize, DataTypes) => {
     location: DataTypes.STRING,
     fare: DataTypes.STRING,
     description: DataTypes.TEXT,
-    image:DataTypes.STRING
+    image:DataTypes.STRING,
+    endTime:DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Exhibition',

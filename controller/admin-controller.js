@@ -143,7 +143,7 @@ const adminController = {
   },
   // create exhibition
   postExhibition: (req, res, next) => {
-    const { name, startDate, endDate, openTime, location, fare, description } = req.body
+    const { name, startDate, endDate, openTime,endTime, location, fare, description } = req.body
     if (!name) throw new Error('Exhibition name is required')
     const {file}=req
     imgurHandler(file)
@@ -153,6 +153,7 @@ const adminController = {
       startDate,
       endDate,
       openTime,
+      endTime,
       location,
       fare,
       description,
@@ -190,7 +191,7 @@ const adminController = {
   //edit exhibition
   putExhibition: (req, res, next) => {
     const id = req.params.id
-    const { name, startDate, endDate, openTime, location, fare, description } = req.body
+    const { name, startDate, endDate, openTime, endTime, location, fare, description } = req.body
     if (!name) throw new Error('Exhibition name is required')
     const {file}=req
     Promise.all([
@@ -203,6 +204,7 @@ const adminController = {
           startDate,
           endDate,
           openTime,
+          endTime,
           location,
           fare,
           description,
