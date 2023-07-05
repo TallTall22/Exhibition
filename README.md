@@ -136,4 +136,18 @@ control + c
 
 #  Demo
 
+![Home Page & Video Page](https://github.com/TallTall22/Exhibition_back_end/blob/main/public/picture/Demo-1.png)
+---
+![Exhibition Page](https://github.com/TallTall22/Exhibition_back_end/blob/main/public/picture/Demo-2.png)
+---
+![Collection Page](https://github.com/TallTall22/Exhibition_back_end/blob/main/public/picture/Demo-3.png)
+---
+![Ticket Page](https://github.com/TallTall22/Exhibition_back_end/blob/main/public/picture/Demo-4.png)
+---
+![Buy Ticket Page](https://github.com/TallTall22/Exhibition_back_end/blob/main/public/picture/Demo-5.png)
+---
+![Admin Page](https://github.com/TallTall22/Exhibition_back_end/blob/main/public/picture/Demo-6.png)
+---
+![Admin Page](https://github.com/TallTall22/Exhibition_back_end/blob/main/public/picture/Demo-7.png)
+---
 ---
