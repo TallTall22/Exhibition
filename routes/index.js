@@ -14,7 +14,6 @@ router.use('/admin',authenticated,authenticatedAdmin, admin)
 router.use('/exhibitions',exhibition)
 router.use('/collections',collection)
 router.use('/videos',video)
-router.use('/carts',cart)
 router.use('/tickets',authenticated,ticket)
 router.use('/', apiErrorHandler)
 
