@@ -2,7 +2,7 @@ const passport = require('passport')
 const LocalStrategy=require('passport-local').Strategy
 const passportJWT = require('passport-jwt')
 const bcrypt=require('bcryptjs')
-const { User } = require('../models')
+const { User,Collection } = require('../models')
 
 
 module.exports=app=>{
@@ -35,7 +35,9 @@ const jwtOption = {
 }
 
 const jwtStrategy=new JWTStrategy(jwtOption,(jwtPayload,cb)=>{
-    User.findByPk(jwtPayload.id)
+    User.findByPk(jwtPayload.id,{
+      include:{model:Collection,as:'FavoritedCollection'}
+    })
     .then(user=>cb(null,user))
     .catch(err=>cb(err))
 })

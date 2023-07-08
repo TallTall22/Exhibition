@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-const { User } = require('../models')
+const { User,Favorite } = require('../models')
 
 const userController = {
   signUp: (req, res, next) => {
@@ -46,6 +46,49 @@ const userController = {
       res.json({status:'success',user})
     })
     .catch(err=>next(err))
+  },
+  addFavorite:(req,res,next)=>{
+    const {collectionId}=req.body
+    const user=req.user
+    Favorite.findOne({
+      where:{
+        userId:user.id,
+        collectionId
+      },
+      raw:true,
+      nest:true
+    })
+    .then(favorite=>{
+      if(!collectionId) throw new Error('The collection is not existed')
+      if(favorite) throw new Error('You have favorited this collection')
+      return Favorite.create({
+        userId:user.id,
+        collectionId
+      })
+    })
+    .then(favorite=>res.json({status:'success',favorite}))
+    .catch(err=>next(err))
+  },
+  deleteFavorite:(req,res,next)=>{
+    const {collectionId}=req.params
+    const user=req.user
+    Favorite.findOne({
+      where:{
+        userId:user.id,
+        collectionId
+      }
+    })
+    .then(favorite=>{
+      if(!favorite) throw new Error("You haven't favorited this collection")
+      return favorite.destroy()
+    })
+    .then(deletedFavorite=>res.json({status:'success',favorite:deletedFavorite}))
+    .catch(err=>next(err))
+  },
+  getFavorites:(req, res, next)=>{
+    const user=req.user
+    const FavoritedCollection=user.FavoritedCollection
+    return res.json({status:'success',FavoritedCollection})
   }
 }
 

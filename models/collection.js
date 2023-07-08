@@ -14,6 +14,11 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       Collection.belongsTo(models.Exhibition, { foreignKey: 'exhibitionId' })
       Collection.belongsTo(models.Category, { foreignKey: 'categoryId' })
+      Collection.belongsToMany(models.User,{
+        through:models.Favorite,
+        foreignKey:'collectionId',
+        as:'FavoritedUser'
+      })
     }
   }
   Collection.init({

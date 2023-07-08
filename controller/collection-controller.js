@@ -22,7 +22,15 @@ const collectionController={
       nest:true
     })
     ])
-    .then(([collections,categories])=>res.json({status:'success',collections,categories,pagination:getPagination(limit,page,collections.count)}))
+    .then(([collections,categories])=>{
+      const FavoritedCollectionId=req.user?.FavoritedCollection?req.user.FavoritedCollection.map(fr=>fr.id):[]
+      const data=collections.rows.map(r=>({
+        ...r,
+        isFavorited:FavoritedCollectionId.includes(r.id)
+      }))
+      res.json({status:'success',data,categories,pagination:getPagination(limit,page,collections.count)})
+    })
+    
     .catch(err=>next(err))
   },
   getcollection:(req,res,next)=>{
